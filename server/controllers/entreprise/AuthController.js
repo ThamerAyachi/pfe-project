@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 
 const registerSchema = Joi.object({
   name: Joi.string().required(),
-  email: Joi.string().required(),
+  email: Joi.string().email().required(),
   password: Joi.string().required(),
   adresse: Joi.string().allow(""),
   phone: Joi.string().allow(""),
