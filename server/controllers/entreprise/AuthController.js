@@ -57,20 +57,17 @@ exports.login = async (req, res, next) => {
     return res.status(401).json({ error: "Email or Password is incorrect" });
   }
 
-  const token = jwt.sign(
-    { id: user._id, email: user.email },
-    process.env.JWT_SECRET
-  );
+  const userObject = user.toObject();
+  delete userObject.password;
 
-  const result = user.toObject();
-  delete result.password;
+  const token = jwt.sign(userObject, process.env.JWT_SECRET);
 
   return res.json({
     token: {
       access_token: token,
       type: "Bearer",
     },
-    entreprise: { ...result },
+    entreprise: { ...userObject },
   });
 };
 
