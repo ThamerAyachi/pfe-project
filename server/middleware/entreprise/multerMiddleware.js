@@ -4,7 +4,7 @@ const fs = require("fs");
 
 const profileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, "../../uploads/condidat/profile");
+    const uploadPath = path.join(__dirname, "../../uploads/entreprise/profile");
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }

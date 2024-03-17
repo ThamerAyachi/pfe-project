@@ -1,6 +1,7 @@
 const Entreprise = require("../../models/Entreprise");
 const bcrypt = require("bcryptjs");
 const Joi = require("joi");
+const fs = require("fs").promises;
 
 exports.profile = async (req, res, next) => {
   return res.json(req.user);
@@ -81,6 +82,28 @@ exports.updatePassword = async (req, res, next) => {
     await user.save();
 
     res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.saveProfilePicture = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    const user = await Entreprise.findById(req.user._id);
+
+    if (!user) {
+      await promisify(fs.unlink)(req.file.path);
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    user.photo = req.file.filename;
+    await user.save();
+
+    res.status(200).json({ message: "Profile photo uploaded successfully" });
   } catch (error) {
     next(error);
   }

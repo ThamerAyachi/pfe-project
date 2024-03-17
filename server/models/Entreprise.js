@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 
 const EntrepriseSchema = mongoose.Schema({
+  photo: { type: String },
+
   name: {
     type: String,
     required: true,

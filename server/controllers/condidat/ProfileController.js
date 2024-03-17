@@ -1,6 +1,7 @@
 const Condidat = require("../../models/Condidat");
 const bcrypt = require("bcryptjs");
 const Joi = require("joi");
+const fs = require("fs").promises;
 
 const { promisify } = require("util");
 
