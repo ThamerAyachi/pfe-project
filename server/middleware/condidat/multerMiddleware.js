@@ -1,6 +1,7 @@
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const BadRequest = require("../../errors/BadRequestError");
 
 const profileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -21,9 +22,7 @@ const fileImageFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
     cb(null, true);
   } else {
-    const error = new Error("Only image files are allowed");
-    error.status = 400;
-    cb(error, false);
+    cb(new BadRequest("Only image files are allowed"), false);
   }
 };
 
