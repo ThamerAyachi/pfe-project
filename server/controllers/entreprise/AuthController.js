@@ -70,7 +70,3 @@ exports.login = async (req, res, next) => {
     entreprise: { ...userObject },
   });
 };
-
-exports.profile = async (req, res, next) => {
-  return res.json(req.user);
-};
