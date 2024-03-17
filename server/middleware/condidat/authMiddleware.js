@@ -20,6 +20,11 @@ exports.authenticate = (req, res, next) => {
           }
 
           const result = user.toObject();
+          if (!!result.photo) {
+            result.photo = `${req.protocol}:\/\/${req.get(
+              "host"
+            )}/file/condidat-profile/${result.photo}`;
+          }
           delete result.password;
 
           return done(null, result);

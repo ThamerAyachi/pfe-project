@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
+const publicRouting = require("./routes/common/publicRoutes");
 const authRouting = require("./routes/common/authRoutes");
 const condidatRouting = require("./routes/condidat/apiRoutes");
 const entrepriseRouting = require("./routes/entreprise/apiRoutes");
@@ -31,10 +32,21 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use("", publicRouting);
 app.use("/auth", authRouting);
 
 app.use("/condidat", condidatRouting);
 app.use("/entreprise", entrepriseRouting);
+
+app.use((err, req, res, next) => {
+  res.status(err.status || 500).json({
+    error: err.message || "Internal Server Error",
+  });
+});
+
+app.use((req, res, next) => {
+  res.status(404).json({ error: "Not Found" });
+});
 
 app.listen(PORT, () => {
   console.log("Server running at port: " + PORT);

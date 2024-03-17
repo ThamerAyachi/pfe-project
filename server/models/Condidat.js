@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
 
 const CondidatSchema = mongoose.Schema({
+  photo: { type: String },
+
   firstName: {
     type: String,
     required: true,
