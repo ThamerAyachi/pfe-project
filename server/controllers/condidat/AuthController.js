@@ -63,6 +63,12 @@ exports.login = async (req, res, next) => {
 
   delete result.password;
 
+  if (!!result.photo) {
+    result.photo = `${req.protocol}:\/\/${req.get(
+      "host"
+    )}/file/condidat-profile/${result.photo}`;
+  }
+
   const token = jwt.sign({ ...result }, process.env.JWT_SECRET);
 
   return res.json({

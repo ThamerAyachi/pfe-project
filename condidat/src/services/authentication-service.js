@@ -1,8 +1,7 @@
 /* eslint-disable */
 import axios from 'axios';
-
-const API_URL = 'http://localhost:3000';
-const TYPE = 'condidat';
+import { API_URL, TYPE } from './environments';
+import { ProfileService } from './profile-service';
 
 export class AuthService {
   constructor() {}
@@ -47,6 +46,12 @@ export class AuthService {
 
   static userValue() {
     const user = JSON.parse(localStorage.getItem('user'));
-    return { ...user, photoURL: 'https://picsum.photos/300/300' };
+    return { ...user, photoURL: user.photo ?? 'https://picsum.photos/300/300' };
+  }
+
+  static async reloadData() {
+    const profileService = new ProfileService();
+    const user = await profileService.getProfile();
+    localStorage.setItem('user', JSON.stringify(user));
   }
 }

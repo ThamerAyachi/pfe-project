@@ -14,20 +14,24 @@ import { account } from 'src/_mock/account';
 
 import { AuthService } from 'src/services/authentication-service';
 import { useRouter } from 'src/routes/hooks';
+import { Link } from 'react-router-dom';
 // ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
   {
     label: 'Home',
     icon: 'eva:home-fill',
+    path: '/',
   },
   {
     label: 'Profile',
     icon: 'eva:person-fill',
+    path: '/profile',
   },
   {
     label: 'Settings',
     icon: 'eva:settings-2-fill',
+    path: '/',
   },
 ];
 
@@ -44,9 +48,17 @@ export default function AccountPopover() {
 
   const handleClose = () => {
     setOpen(null);
+  };
+
+  const logout = () => {
+    handleClose();
     const authService = new AuthService();
     authService.logout();
     router.push('/login');
+  };
+
+  const handelNavigate = (path) => {
+    router.push(path ?? '/');
   };
 
   return (
@@ -105,7 +117,7 @@ export default function AccountPopover() {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         {MENU_OPTIONS.map((option) => (
-          <MenuItem key={option.label} onClick={handleClose}>
+          <MenuItem key={option.label} to={option.path} component={Link}>
             {option.label}
           </MenuItem>
         ))}
@@ -115,7 +127,7 @@ export default function AccountPopover() {
         <MenuItem
           disableRipple
           disableTouchRipple
-          onClick={handleClose}
+          onClick={logout}
           sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
         >
           Logout
