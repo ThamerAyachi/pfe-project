@@ -21,6 +21,7 @@ export default function ProfileView() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [open, setOpen] = useState(false);
   const [massageNot, setMessage] = useState('');
+  const [passwords, setPasswords] = useState({ oldPassword: '', newPassword: '' });
 
   const profileService = new ProfileService();
   const [user, setUser] = useState(AuthService.userValue());
@@ -38,7 +39,8 @@ export default function ProfileView() {
       await AuthService.reloadData();
       handleClick('Profile picture updated');
     } catch (error) {
-      console.error('Error:', error);
+      console.error(error);
+      handleClick(error.toString());
     }
   };
 
@@ -49,7 +51,20 @@ export default function ProfileView() {
       await AuthService.reloadData();
       handleClick('Profile updated');
     } catch (error) {
-      console.error('Error:', error);
+      console.error(error);
+      handleClick(error.toString());
+    }
+  };
+
+  const handleUpdatePasswords = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await profileService.updatePassword(passwords);
+      await AuthService.reloadData();
+      handleClick('Password updated');
+    } catch (error) {
+      console.error(error);
+      handleClick(error.toString());
     }
   };
 
@@ -159,6 +174,52 @@ export default function ProfileView() {
               </Grid>
             </Grid>
           </form>
+
+          <div style={{ margin: '50px 0 20px 0' }}>
+            <Typography variant="h4" my={3}>
+              Update Password
+            </Typography>
+            <form onSubmit={handleUpdatePasswords}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    id="outlined-basic"
+                    label="Old Password"
+                    variant="outlined"
+                    type="password"
+                    style={{ width: '100%' }}
+                    value={passwords.oldPassword ?? ''}
+                    onChange={(e) => setPasswords({ ...passwords, oldPassword: e.target.value })}
+                    inputProps={{ minLength: 8 }}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    id="outlined-basic"
+                    label="New Password"
+                    variant="outlined"
+                    type="password"
+                    style={{ width: '100%' }}
+                    value={passwords.newPassword ?? ''}
+                    onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
+                    inputProps={{ minLength: 8 }}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    style={{ width: '100%' }}
+                  >
+                    Update Password
+                  </Button>
+                </Grid>
+              </Grid>
+            </form>
+          </div>
         </CardContent>
       </Card>
 

@@ -12,7 +12,7 @@ export class ProfileService {
       const { data } = await axios.get(`${API_URL}/${TYPE}`, config);
       return data;
     } catch (e) {
-      throw new Error(e);
+      throw new Error(e.response.data.error);
     }
   }
 
@@ -22,7 +22,7 @@ export class ProfileService {
       const { data } = await axios.post(`${API_URL}/${TYPE}/picture`, formData, config);
       return data;
     } catch (e) {
-      throw new Error(e);
+      throw new Error(e.response.data.error);
     }
   }
 
@@ -32,7 +32,17 @@ export class ProfileService {
       const { data } = await axios.post(`${API_URL}/${TYPE}`, formData, config);
       return data;
     } catch (e) {
-      throw new Error(e);
+      throw new Error(e.response.data.error);
+    }
+  }
+
+  async updatePassword(formData) {
+    try {
+      const config = { headers: { ...authHeader() } };
+      const { data } = await axios.post(`${API_URL}/${TYPE}/update-password`, formData, config);
+      return data;
+    } catch (e) {
+      throw new Error(e.response.data.error);
     }
   }
 }
