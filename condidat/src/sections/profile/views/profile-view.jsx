@@ -5,6 +5,10 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
 
 import { ImageButton } from '../profile-image-button';
 import { ImageSrc } from '../profile-image-src';
@@ -15,6 +19,8 @@ import { ProfileService } from 'src/services/profile-service';
 
 export default function ProfileView() {
   const [selectedImage, setSelectedImage] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [massageNot, setMessage] = useState('');
 
   const profileService = new ProfileService();
   const [user, setUser] = useState(AuthService.userValue());
@@ -23,15 +29,41 @@ export default function ProfileView() {
     const file = event.target.files[0];
     setSelectedImage(file);
     const formData = new FormData();
+    if (!file) return;
     formData.append('photo', file);
 
     try {
       const response = await profileService.updateProfilePhoto(formData);
-      setUser(profileService.getProfile());
+      setUser({ ...user, photoURL: profileService.getProfile().photoURL });
       await AuthService.reloadData();
+      handleClick('Profile picture updated');
     } catch (error) {
       console.error('Error:', error);
     }
+  };
+
+  const handleUpdateProfile = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await profileService.updateProfile(user);
+      await AuthService.reloadData();
+      handleClick('Profile updated');
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleClick = (message = 'Notification') => {
+    setMessage(message);
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
   };
 
   return (
@@ -47,6 +79,7 @@ export default function ProfileView() {
             key="123"
             style={{
               width: 200,
+              margin: '20px 0 0 0',
             }}
           >
             <VisuallyHiddenInput type="file" accept="image/*" onChange={handleFileChange} />
@@ -57,8 +90,79 @@ export default function ProfileView() {
               <ImageSrc style={{ backgroundImage: `url(${user.photoURL})` }} />
             )}
           </ImageButton>
+
+          <Typography variant="h4" my={3}>
+            General
+          </Typography>
+          <form onSubmit={handleUpdateProfile}>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  id="outlined-basic"
+                  label="First Name"
+                  variant="outlined"
+                  style={{ width: '100%' }}
+                  value={user.firstName ?? ''}
+                  onChange={(e) => setUser({ ...user, firstName: e.target.value })}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  id="outlined-basic"
+                  label="Last Name"
+                  variant="outlined"
+                  style={{ width: '100%' }}
+                  value={user.lastName ?? ''}
+                  onChange={(e) => setUser({ ...user, lastName: e.target.value })}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  id="outlined-basic"
+                  label="Email"
+                  variant="outlined"
+                  style={{ width: '100%' }}
+                  value={user.email ?? ''}
+                  onChange={(e) => setUser({ ...user, email: e.target.value })}
+                  inputProps={{ type: 'email' }}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  id="outlined-basic"
+                  label="Adresse"
+                  variant="outlined"
+                  style={{ width: '100%' }}
+                  value={user.adresse ?? ''}
+                  onChange={(e) => setUser({ ...user, adresse: e.target.value })}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  id="outlined-basic"
+                  label="Phone"
+                  variant="outlined"
+                  style={{ width: '100%' }}
+                  value={user.phone ?? ''}
+                  onChange={(e) => setUser({ ...user, phone: e.target.value })}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Button type="submit" variant="contained" color="primary" style={{ width: '100%' }}>
+                  Update Profile
+                </Button>
+              </Grid>
+            </Grid>
+          </form>
         </CardContent>
       </Card>
+
+      <Snackbar open={open} autoHideDuration={2000} onClose={handleClose} message={massageNot} />
     </Container>
   );
 }

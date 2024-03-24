@@ -25,4 +25,14 @@ export class ProfileService {
       throw new Error(e);
     }
   }
+
+  async updateProfile(formData) {
+    try {
+      const config = { headers: { ...authHeader() } };
+      const { data } = await axios.post(`${API_URL}/${TYPE}`, formData, config);
+      return data;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
 }
