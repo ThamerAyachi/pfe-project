@@ -16,6 +16,8 @@ const CondidatSchema = mongoose.Schema({
     unique: true,
   },
 
+  emailVerified: { type: Boolean, default: false },
+
   password: { type: String, required: true },
 
   adresse: { type: String },
