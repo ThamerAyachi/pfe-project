@@ -46,7 +46,7 @@ export class AuthService {
 
   static userValue() {
     const user = JSON.parse(localStorage.getItem('user'));
-    return { ...user, photoURL: user.photo ?? 'https://picsum.photos/300/300' };
+    return { ...user, photoURL: user?.photo ?? 'https://picsum.photos/300/300' };
   }
 
   static async reloadData() {
