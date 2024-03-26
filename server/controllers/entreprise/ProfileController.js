@@ -32,6 +32,10 @@ exports.updateProfile = async (req, res, next) => {
       return res.status(404).json({ error: "User not found" });
     }
 
+    if (!!value.email) {
+      value.email = value.email.toLowerCase();
+    }
+
     if (value.email && value.email !== existingUser.email) {
       const emailExists = await Entreprise.exists({ email: value.email });
       if (emailExists) {

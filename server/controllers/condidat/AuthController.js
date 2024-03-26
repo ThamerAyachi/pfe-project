@@ -19,8 +19,10 @@ exports.register = async (req, res, next) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
+    const email = req.body.email.toLowerCase();
+
     const existingUser = await Condidat.findOne({
-      email: req.body.email,
+      email: email,
     });
     if (existingUser) {
       return res.status(409).json({ error: "Email already exists" });
@@ -31,7 +33,7 @@ exports.register = async (req, res, next) => {
     const user = new Condidat({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
-      email: req.body.email,
+      email: email,
       password: hashedPassword,
       adresse: req.body.adresse,
       phone: req.body.phone,
@@ -53,7 +55,7 @@ exports.login = async (req, res, next) => {
       .json({ error: "Email and Password must be provided" });
   }
 
-  const user = await Condidat.findOne({ email });
+  const user = await Condidat.findOne({ email: email.toLowerCase() });
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return res.status(401).json({ error: "Email or Password is incorrect" });
