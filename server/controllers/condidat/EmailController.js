@@ -31,8 +31,8 @@ exports.forgetPassword = async (req, res, next) => {
   } catch (error) {
     console.error("Error in forgotPassword:", error);
     return res
-      .status(error.status | 400)
-      .json({ error: error.message | "Error in forgotPassword" });
+      .status(error.status ?? 400)
+      .json({ error: error.message ?? "Error in forgotPassword" });
   }
 };
 
@@ -88,9 +88,13 @@ exports.resetPassword = async (req, res, next) => {
     return res.status(200).json({ message: "Password Reseated" });
   } catch (error) {
     console.error("Error in resetPassword: ", error);
-    return res
-      .status(error.status ?? 400)
-      .json({ error: error.message ?? "Error in resetPassword" });
+    if (err instanceof jwt.TokenExpiredError) {
+      console.log("Token expired");
+      return res.status(400).json({ error: "Token expired" });
+    } else
+      return res
+        .status(error.status ?? 400)
+        .json({ error: error.message ?? "Error in resetPassword" });
   }
 };
 
@@ -153,6 +157,8 @@ exports.resendEmailVerification = async (req, res, nex) => {
       .json({ message: "Email Verification send successfully" });
   } catch (err) {
     console.log("Error in resend email verification: ", err);
-    throw new BadRequestError("Error in resend email verification");
+    return res
+      .status(400)
+      .json({ error: "Error in resend email verification" });
   }
 };
