@@ -3,6 +3,10 @@ const Joi = require("joi");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const emailController = require("./EmailController");
+
+require("dotenv").config();
+
 const registerSchema = Joi.object({
   name: Joi.string().required(),
   email: Joi.string().email().required(),
@@ -18,8 +22,10 @@ exports.register = async (req, res, next) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
+    const email = req.body.email.toLowerCase();
+
     const existingUser = await Entreprise.findOne({
-      email: req.body.email,
+      email: email,
     });
     if (existingUser) {
       return res.status(409).json({ error: "Email already exists" });
@@ -35,6 +41,8 @@ exports.register = async (req, res, next) => {
       phone: req.body.phone,
     });
     await user.save();
+
+    await emailController.sendEmailVerified(req, email, user._id);
 
     res.status(201).json({ message: "Entreprise created successfully" });
   } catch (error) {
