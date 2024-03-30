@@ -1,6 +1,8 @@
 const Condidat = require("../../models/Condidat");
 const jwt = require("jsonwebtoken");
 const path = require("path");
+const bcrypt = require("bcryptjs");
+const Joi = require("joi");
 
 const emailService = require("../../utils/common/EmailService");
 const { BadRequestError, NotFoundError } = require("../../errors/index");
@@ -10,16 +12,16 @@ require("dotenv").config();
 exports.forgetPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
-    const user = Condidat.findOne({ email });
+    const user = await Condidat.findOne({ email });
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      throw new NotFoundError("User not found");
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "2h",
+    });
 
-    const resetLink = `${req.protocol}://${req.get(
-      "host"
-    )}/condidat/reset-password/${token}`;
+    const resetLink = `${process.env.FRONT_URL}/reset_password/${token}`;
 
     await emailService.sendMail(email, "Password reset", "forgetPassword", {
       resetLink,
@@ -28,7 +30,67 @@ exports.forgetPassword = async (req, res, next) => {
     res.status(200).json({ message: "Password reset email sent successfully" });
   } catch (error) {
     console.error("Error in forgotPassword:", error);
-    throw new BadRequestError("Error in forgotPassword");
+    return res
+      .status(error.status | 400)
+      .json({ error: error.message | "Error in forgotPassword" });
+  }
+};
+
+exports.checkTokenRestPassword = async (req, res, next) => {
+  const token = req.params.token;
+  try {
+    if (!token) {
+      throw new BadRequestError("Token is missing");
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    return res.status(200).json({ message: "Token valid" });
+  } catch (err) {
+    if (err instanceof jwt.TokenExpiredError) {
+      console.log("Token expired");
+      return res.status(400).json({ error: "Token expired" });
+    } else {
+      console.log("Error in 'Check token password': ", err);
+      return res.status(400).json({ error: "Invalid token" });
+    }
+  }
+};
+
+const resetPassword = Joi.object({
+  password: Joi.string().min(8),
+});
+
+exports.resetPassword = async (req, res, next) => {
+  const token = req.params.token;
+  const { password } = req.body;
+  try {
+    if (!token || !password) {
+      throw new BadRequestError("Token and new password are required");
+    }
+
+    const { error } = resetPassword.validate(req.body);
+    if (error) {
+      throw new BadRequestError(error);
+    }
+
+    const decode = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await Condidat.findOne({ _id: decode.userId.toString() });
+
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Password Reseated" });
+  } catch (error) {
+    console.error("Error in resetPassword: ", error);
+    return res
+      .status(error.status ?? 400)
+      .json({ error: error.message ?? "Error in resetPassword" });
   }
 };
 

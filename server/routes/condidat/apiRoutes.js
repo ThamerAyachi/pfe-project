@@ -32,4 +32,10 @@ router.post(
   emailController.resendEmailVerification
 );
 
+router.get("/rest-password", emailController.forgetPassword);
+
+router.get("/rest-password/:token", emailController.checkTokenRestPassword);
+
+router.post("/rest-password/:token", emailController.resetPassword);
+
 module.exports = router;
