@@ -13,6 +13,8 @@ const EntrepriseSchema = mongoose.Schema({
     required: true,
   },
 
+  emailVerified: { type: Boolean, default: false },
+
   password: {
     type: String,
     required: true,

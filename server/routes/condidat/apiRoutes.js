@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const profileController = require("../../controllers/condidat/ProfileController");
+const emailController = require("../../controllers/condidat/EmailController");
 
 const authMiddleware = require("../../middleware/condidat/authMiddleware");
 const multerMiddleware = require("../../middleware/condidat/multerMiddleware");
@@ -22,5 +23,19 @@ router.post(
   multerMiddleware.uploadProfilePicture.single("photo"),
   profileController.saveProfilePicture
 );
+
+router.get("/email-verified/:token", emailController.verifiedEmail);
+
+router.post(
+  "/email-verified",
+  authMiddleware.authenticate,
+  emailController.resendEmailVerification
+);
+
+router.get("/rest-password", emailController.forgetPassword);
+
+router.get("/rest-password/:token", emailController.checkTokenRestPassword);
+
+router.post("/rest-password/:token", emailController.resetPassword);
 
 module.exports = router;

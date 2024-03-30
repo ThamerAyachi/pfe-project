@@ -13,6 +13,7 @@ export const UserPage = lazy(() => import('src/pages/user'));
 export const LoginPage = lazy(() => import('src/pages/login'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
+export const ProfilePage = lazy(() => import('src/pages/profile'));
 
 // ----------------------------------------------------------------------
 
@@ -40,6 +41,7 @@ export default function Router() {
       ),
       children: [
         { element: <PrivateRoute element={<IndexPage />} />, index: true },
+        { path: 'profile', element: <PrivateRoute element={<ProfilePage />} /> },
         { path: 'user', element: <PrivateRoute element={<UserPage />} /> },
         { path: 'products', element: <PrivateRoute element={<ProductsPage />} /> },
         { path: 'blog', element: <PrivateRoute element={<BlogPage />} /> },
