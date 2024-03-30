@@ -3,6 +3,10 @@ const Joi = require("joi");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const emailController = require("./EmailController");
+
+require("dotenv").config();
+
 const registerSchema = Joi.object({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
@@ -39,6 +43,8 @@ exports.register = async (req, res, next) => {
       phone: req.body.phone,
     });
     await user.save();
+
+    await emailController.sendEmailVerified(req, email, user._id);
 
     res.status(201).json({ message: "Condidat created successfully" });
   } catch (error) {
