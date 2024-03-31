@@ -76,6 +76,9 @@ export default function LoginView() {
             ),
           }}
         />
+        <Link variant="subtitle2" sx={{ ml: 0.5 }} href="/reset_password" component={RouterLink}>
+          Forget Password
+        </Link>
       </Stack>
       {errorLogin && (
         <div style={{ color: 'red', padding: '10px 0' }}>Email or Password is incorrect</div>
