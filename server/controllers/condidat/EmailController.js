@@ -21,7 +21,7 @@ exports.forgetPassword = async (req, res, next) => {
       expiresIn: "2h",
     });
 
-    const resetLink = `${process.env.FRONT_URL}/reset_password/${token}`;
+    const resetLink = `${process.env.FRONT_URL}/set_password/?token=${token}`;
 
     await emailService.sendMail(email, "Password reset", "forgetPassword", {
       resetLink,
