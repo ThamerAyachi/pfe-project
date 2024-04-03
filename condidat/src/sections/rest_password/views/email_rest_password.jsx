@@ -78,7 +78,14 @@ export default function EmailRestPasswordView() {
 
             <div style={{ marginTop: '15px' }}></div>
 
-            <LoadingButton fullWidth size="large" type="submit" variant="contained" color="inherit">
+            <LoadingButton
+              disabled={isLoading}
+              fullWidth
+              size="large"
+              type="submit"
+              variant="contained"
+              color="inherit"
+            >
               {isLoading ? 'Email Sending...' : 'Send E-mail'}
             </LoadingButton>
           </Stack>

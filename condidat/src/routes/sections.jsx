@@ -14,6 +14,7 @@ export const RegisterPage = lazy(() => import('src/pages/register'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const ProfilePage = lazy(() => import('src/pages/profile'));
+export const SetPasswordPage = lazy(() => import('src/pages/reset_password/set_password'));
 export const EmailResetPasswordPage = lazy(() =>
   import('src/pages/reset_password/email_reset_password')
 );
@@ -61,6 +62,10 @@ export default function Router() {
     {
       path: 'reset_password',
       element: <PublicRoute element={<EmailResetPasswordPage />} />,
+    },
+    {
+      path: 'set_password',
+      element: <PublicRoute element={<SetPasswordPage />} />,
     },
     {
       path: '404',
