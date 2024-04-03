@@ -65,16 +65,22 @@ exports.login = async (req, res, next) => {
     return res.status(401).json({ error: "Email or Password is incorrect" });
   }
 
-  const userObject = user.toObject();
-  delete userObject.password;
+  const result = user.toObject();
+  delete result.password;
 
-  const token = jwt.sign(userObject, process.env.JWT_SECRET);
+  if (!!result.photo) {
+    result.photo = `${req.protocol}:\/\/${req.get(
+      "host"
+    )}/file/entreprise-profile/${result.photo}`;
+  }
+
+  const token = jwt.sign(result, process.env.JWT_SECRET);
 
   return res.json({
     token: {
       access_token: token,
       type: "Bearer",
     },
-    entreprise: { ...userObject },
+    entreprise: { ...result },
   });
 };
