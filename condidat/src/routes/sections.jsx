@@ -4,16 +4,20 @@ import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
-import RegisterView from 'src/sections/register/register-view';
 import { AuthService } from 'src/services/authentication-service';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const LoginPage = lazy(() => import('src/pages/login'));
+export const RegisterPage = lazy(() => import('src/pages/register'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const ProfilePage = lazy(() => import('src/pages/profile'));
+export const SetPasswordPage = lazy(() => import('src/pages/reset_password/set_password'));
+export const EmailResetPasswordPage = lazy(() =>
+  import('src/pages/reset_password/email_reset_password')
+);
 
 // ----------------------------------------------------------------------
 
@@ -53,7 +57,15 @@ export default function Router() {
     },
     {
       path: 'register',
-      element: <PublicRoute element={<RegisterView />} />,
+      element: <PublicRoute element={<RegisterPage />} />,
+    },
+    {
+      path: 'reset_password',
+      element: <PublicRoute element={<EmailResetPasswordPage />} />,
+    },
+    {
+      path: 'set_password',
+      element: <PublicRoute element={<SetPasswordPage />} />,
     },
     {
       path: '404',

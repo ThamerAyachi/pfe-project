@@ -54,4 +54,31 @@ export class AuthService {
     const user = await profileService.getProfile();
     localStorage.setItem('user', JSON.stringify(user));
   }
+
+  async sendMailRestPassword(email) {
+    try {
+      const { data } = await axios.post(`${API_URL}/${TYPE}/rest-password`, { email });
+      return data;
+    } catch (e) {
+      throw new Error(e.response.data.error);
+    }
+  }
+
+  async validateTokenRestPassword(token) {
+    try {
+      const { data } = await axios.get(`${API_URL}/${TYPE}/rest-password/${token}`);
+      return data;
+    } catch (e) {
+      throw new Error(e.response.data.error);
+    }
+  }
+
+  async resetPassword(token, password) {
+    try {
+      const { data } = await axios.post(`${API_URL}/${TYPE}/rest-password/${token}`, { password });
+      return data;
+    } catch (e) {
+      throw new Error(e.response.data.error);
+    }
+  }
 }

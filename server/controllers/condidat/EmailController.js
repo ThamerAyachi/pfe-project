@@ -9,6 +9,8 @@ const { BadRequestError, NotFoundError } = require("../../errors/index");
 
 require("dotenv").config();
 
+const invalidatedTokens = [];
+
 exports.forgetPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
@@ -18,10 +20,10 @@ exports.forgetPassword = async (req, res, next) => {
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "2h",
+      expiresIn: "1h",
     });
 
-    const resetLink = `${process.env.FRONT_URL}/reset_password/${token}`;
+    const resetLink = `${process.env.FRONT_URL}/set_password/?token=${token}`;
 
     await emailService.sendMail(email, "Password reset", "forgetPassword", {
       resetLink,
@@ -36,12 +38,21 @@ exports.forgetPassword = async (req, res, next) => {
   }
 };
 
+const invalidateToken = (token) => {
+  invalidatedTokens.push(token);
+};
+
 exports.checkTokenRestPassword = async (req, res, next) => {
   const token = req.params.token;
   try {
     if (!token) {
       throw new BadRequestError("Token is missing");
     }
+
+    if (invalidatedTokens.includes(token)) {
+      return res.status(400).json({ error: "Token has already been used" });
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     return res.status(200).json({ message: "Token valid" });
@@ -68,6 +79,10 @@ exports.resetPassword = async (req, res, next) => {
       throw new BadRequestError("Token and new password are required");
     }
 
+    if (invalidatedTokens.includes(token)) {
+      return res.status(400).json({ error: "Token has already been used" });
+    }
+
     const { error } = resetPassword.validate(req.body);
     if (error) {
       throw new BadRequestError(error);
@@ -84,6 +99,8 @@ exports.resetPassword = async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     user.password = hashedPassword;
     await user.save();
+
+    invalidateToken(token);
 
     return res.status(200).json({ message: "Password Reseated" });
   } catch (error) {
