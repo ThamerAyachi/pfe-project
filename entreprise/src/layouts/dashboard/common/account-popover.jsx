@@ -14,23 +14,24 @@ import { account } from 'src/_mock/account';
 
 import { AuthService } from 'src/services/authentication-service';
 import { useRouter } from 'src/routes/hooks';
+import { Link } from 'react-router-dom';
 // ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
   {
     label: 'Home',
     icon: 'eva:home-fill',
-    path: '/'
+    path: '/',
   },
   {
     label: 'Profile',
     icon: 'eva:person-fill',
-    path: '/profile'
+    path: '/profile',
   },
   {
     label: 'Settings',
     icon: 'eva:settings-2-fill',
-    path: '/'
+    path: '/',
   },
 ];
 
@@ -40,7 +41,6 @@ export default function AccountPopover() {
   const [open, setOpen] = useState(null);
 
   const router = useRouter();
-  const authService = new AuthService();
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -48,14 +48,18 @@ export default function AccountPopover() {
 
   const handleClose = () => {
     setOpen(null);
+  };
+
+  const logout = () => {
+    handleClose();
     const authService = new AuthService();
     authService.logout();
     router.push('/login');
   };
 
   const handelNavigate = (path) => {
-    router.push(path?? '/')
-  }
+    router.push(path ?? '/');
+  };
 
   return (
     <>
@@ -72,15 +76,15 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={authService.userValue().photoURL}
-          alt={authService.userValue().name}
+          src={AuthService.userValue().photoURL}
+          alt={AuthService.userValue().name}
           sx={{
             width: 36,
             height: 36,
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {authService.userValue().name?.charAt(0).toUpperCase()}
+          {AuthService.userValue().name?.charAt(0).toUpperCase()}
         </Avatar>
       </IconButton>
 
@@ -101,17 +105,17 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {authService.userValue()?.name}
+            {AuthService.userValue()?.name}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {authService.userValue()?.email}
+            {AuthService.userValue()?.email}
           </Typography>
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         {MENU_OPTIONS.map((option) => (
-          <MenuItem key={option.label} onClick={handelNavigate(option.path)}>
+          <MenuItem key={option.label} to={option.path} component={Link}>
             {option.label}
           </MenuItem>
         ))}
@@ -121,7 +125,7 @@ export default function AccountPopover() {
         <MenuItem
           disableRipple
           disableTouchRipple
-          onClick={handleClose}
+          onClick={logout}
           sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
         >
           Logout
