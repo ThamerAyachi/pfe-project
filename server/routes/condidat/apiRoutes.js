@@ -3,6 +3,7 @@ const router = express.Router();
 
 const profileController = require("../../controllers/condidat/ProfileController");
 const emailController = require("../../controllers/condidat/EmailController");
+const resumeController = require("../../controllers/condidat/ResumeController");
 
 const authMiddleware = require("../../middleware/condidat/authMiddleware");
 const multerMiddleware = require("../../middleware/condidat/multerMiddleware");
@@ -37,5 +38,12 @@ router.post("/rest-password", emailController.forgetPassword);
 router.get("/rest-password/:token", emailController.checkTokenRestPassword);
 
 router.post("/rest-password/:token", emailController.resetPassword);
+
+router.post(
+  "/resume",
+  authMiddleware.authenticate,
+  multerMiddleware.uploadResume.single("resume"),
+  resumeController.uploadResume
+);
 
 module.exports = router;
