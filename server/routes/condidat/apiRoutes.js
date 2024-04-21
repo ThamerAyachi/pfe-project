@@ -46,4 +46,11 @@ router.post(
   resumeController.uploadResume
 );
 
+router.get("/resume", authMiddleware.authenticate, resumeController.getResumes);
+router.delete(
+  "/resume/:id",
+  authMiddleware.authenticate,
+  resumeController.deleteResume
+);
+
 module.exports = router;

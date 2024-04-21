@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 const axios = require("axios");
 const FormData = require("form-data");
 const Resume = require("../../models/Resume");
@@ -25,6 +26,19 @@ const processResume = async (file) => {
   });
 
   return response;
+};
+
+const deleteFile = async (filename) => {
+  const filePath = path.join(
+    __dirname,
+    "..",
+    "..",
+    "uploads",
+    "condidat",
+    "resume",
+    filename
+  );
+  await fs.promises.unlink(filePath);
 };
 
 exports.uploadResume = async (req, res, next) => {
@@ -54,5 +68,39 @@ exports.uploadResume = async (req, res, next) => {
     return res
       .status(error.status ?? 400)
       .json({ error: error.message ?? "Error in uploadResume" });
+  }
+};
+
+exports.getResumes = async (req, res, next) => {
+  try {
+    const resumes = await Resume.find({ condidat: req.user._id });
+
+    return res.status(200).json(resumes);
+  } catch (error) {
+    console.error("Error in getResumes:", error);
+    return res
+      .status(error.status ?? 400)
+      .json({ error: error.message ?? "Error in getResumes" });
+  }
+};
+
+exports.deleteResume = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const resume = await Resume.findOne({ _id: id, condidat: req.user._id });
+
+    if (!resume) {
+      throw new BadRequestError("Resume not found");
+    }
+
+    await Resume.deleteOne({ _id: id, condidat: req.user._id });
+    await deleteFile(resume.path);
+
+    return res.status(200).json({ message: "Resume deleted successfully" });
+  } catch (error) {
+    console.error("Error in deleteResume:", error);
+    return res
+      .status(error.status ?? 400)
+      .json({ error: error.message ?? "Error in deleteResume" });
   }
 };
