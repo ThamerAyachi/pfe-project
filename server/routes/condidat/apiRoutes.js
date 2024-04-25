@@ -53,4 +53,10 @@ router.delete(
   resumeController.deleteResume
 );
 
+router.post(
+  "/resume/generate",
+  authMiddleware.authenticate,
+  resumeController.generateResume
+);
+
 module.exports = router;

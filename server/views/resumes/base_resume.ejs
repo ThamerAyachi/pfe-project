@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        line-height: 1.6;
+        background-color: #f9f9f9 !important;
+      }
+
+      html {
+        -webkit-print-color-adjust: exact;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 10px auto;
+        padding: 10px;
+        background-color: #ffffff !important;
+        border-radius: 8px;
+      }
+
+      .profile {
+        margin-bottom: 20px;
+        background-color: #007bff !important;
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: #ffffff !important;
+      }
+
+      .profile h1 {
+        margin: 0;
+        font-size: 36px;
+        text-transform: uppercase;
+      }
+
+      .profile p {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .about-me {
+        margin-bottom: 20px;
+      }
+
+      .about-me h2 {
+        font-size: 24px;
+        color: #333333 !important;
+      }
+
+      .about-me p {
+        font-size: 16px;
+        color: #666666 !important;
+      }
+
+      .experience,
+      .skills {
+        margin-bottom: 20px;
+      }
+
+      .job {
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #dddddd !important;
+      }
+
+      .job h3 {
+        margin: 5px 0;
+        font-size: 24px;
+        color: #333333 !important;
+      }
+
+      .job p {
+        margin: 0;
+        font-size: 16px;
+        color: #666666 !important;
+      }
+
+      .job .description {
+        margin-top: 10px;
+        font-size: 16px;
+        color: #888888 !important;
+      }
+
+      .skills ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      .skills li {
+        display: inline-block;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        font-size: 16px;
+        color: #ffffff !important;
+        background-color: #007bff !important;
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+
+      .header {
+        background-color: #007bff !important;
+        padding: 20px;
+        color: #ffffff !important;
+        border-radius: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1><%= profile.name %></h1>
+      <p><%= profile.email %></p>
+      <!-- Add other profile information -->
+    </div>
+
+    <div class="container">
+      <div class="about-me">
+        <h2>About Me</h2>
+        <p><%= aboutMe %></p>
+      </div>
+
+      <div class="experience">
+        <h2>Experience</h2>
+        <% experience.forEach(exp => { %>
+        <div class="job">
+          <h3><%= exp.title %></h3>
+          <p><%= exp.company %>, <%= exp.duration %></p>
+          <p class="description"><%= exp.description %></p>
+          <!-- Add other experience details -->
+        </div>
+        <% }); %>
+      </div>
+
+      <div class="skills">
+        <h2>Skills</h2>
+        <ul>
+          <% skills.forEach(skill => { %>
+          <li><%= skill %></li>
+          <% }); %>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>
