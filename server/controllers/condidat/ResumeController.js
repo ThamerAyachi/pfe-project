@@ -28,6 +28,9 @@ const processResume = async (file) => {
   return response;
 };
 
+const fullUrlResume = (req, path) =>
+  `${req.protocol}:\/\/${req.get("host")}/file/condidat-resume/${path}`;
+
 const deleteFile = async (filename) => {
   const filePath = path.join(
     __dirname,
@@ -75,7 +78,15 @@ exports.getResumes = async (req, res, next) => {
   try {
     const resumes = await Resume.find({ condidat: req.user._id });
 
-    return res.status(200).json(resumes);
+    const result = resumes.map((resume) => ({
+      _id: resume._id,
+      condidat: resume.condidat,
+      name: resume.name,
+      content: resume.content,
+      path: fullUrlResume(req, resume.path),
+    }));
+
+    return res.status(200).json(result);
   } catch (error) {
     console.error("Error in getResumes:", error);
     return res
