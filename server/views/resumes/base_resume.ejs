@@ -27,7 +27,7 @@
 
       .profile {
         margin-bottom: 20px;
-        background-color: #007bff !important;
+        background-color: <%= mainColor %> !important;
         padding: 10px 20px;
         border-radius: 8px;
         color: #ffffff !important;
@@ -98,13 +98,13 @@
         margin-bottom: 10px;
         font-size: 16px;
         color: #ffffff !important;
-        background-color: #007bff !important;
+        background-color: <%= mainColor %> !important;
         padding: 5px 10px;
         border-radius: 5px;
       }
 
       .header {
-        background-color: #007bff !important;
+        background-color: <%= mainColor %> !important;
         padding: 20px;
         color: #ffffff !important;
         border-radius: 0;
@@ -115,6 +115,7 @@
     <div class="header">
       <h1><%= profile.name %></h1>
       <p><%= profile.email %></p>
+      <p><%= profile.phone %></p>
       <!-- Add other profile information -->
     </div>
 

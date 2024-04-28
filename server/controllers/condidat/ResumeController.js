@@ -6,6 +6,7 @@ const axios = require("axios");
 const FormData = require("form-data");
 const Resume = require("../../models/Resume");
 const mongoose = require("mongoose");
+const Joi = require("joi");
 
 const { BadRequestError } = require("../../errors/index");
 
@@ -25,6 +26,17 @@ const processResume = async (file) => {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
+  });
+
+  return response;
+};
+
+const aboutResume = async (jobTitle) => {
+  const apiUrl = process.env.AI_URL + "/about";
+  const response = await axios.request({
+    method: "post",
+    url: apiUrl,
+    data: { job_title: jobTitle },
   });
 
   return response;
@@ -118,63 +130,79 @@ exports.deleteResume = async (req, res, next) => {
   }
 };
 
+const generateSchema = Joi.object({
+  job_title: Joi.string().required(),
+  main_color: Joi.string().required(),
+  experience: Joi.array()
+    .items(
+      Joi.object({
+        title: Joi.string().required(),
+        company: Joi.string().required(),
+        duration: Joi.string().required(),
+        description: Joi.string().required(),
+      })
+    )
+    .optional()
+    .default([]),
+  skills: Joi.array().items(Joi.string()).optional().default([]),
+});
+
+const generatePdf = async (data) => {
+  const templatePath = path.join(
+    __dirname,
+    "..",
+    "..",
+    "views/resumes/base_resume.ejs"
+  );
+  const template = fs.readFileSync(templatePath, "utf-8");
+  const compiledTemplate = ejs.compile(template);
+  const html = compiledTemplate({ ...data });
+
+  const browser = await puppeteer.launch({ headless: false });
+  const page = await browser.newPage();
+  await page.setContent(html);
+  const pdfBuffer = await page.pdf({ format: "A4" });
+  await browser.close();
+
+  return pdfBuffer;
+};
+
 exports.generateResume = async (req, res, next) => {
   try {
+    const { error, value } = generateSchema.validate(req.body);
+    if (error) throw new BadRequestError(error.details[0].message);
+    const response = await aboutResume(value.job_title);
+
     const data = {
+      mainColor: value.main_color,
       profile: {
-        name: "Alice Smith",
-        email: "alice@example.com",
+        name: `${req.user.firstName ?? ""} ${req.user.lastName ?? ""}`,
+        email: `${req.user.email ?? ""}`,
+        phone: `${req.user.phone ?? ""}`,
       },
-      aboutMe:
-        "I am a dedicated and customer-oriented call center agent with experience in handling inbound and outbound calls. I possess excellent communication skills and thrive in fast-paced environments. My goal is to ensure customer satisfaction by providing timely and accurate assistance.",
-      experience: [
-        {
-          title: "Call Center Agent",
-          company: "ABC Call Center",
-          duration: "2020 - Present",
-          description:
-            "Handle inbound customer inquiries regarding product information, order status, and issue resolution. Provide exceptional customer service by addressing concerns and resolving problems efficiently. Meet or exceed performance targets for call quality, customer satisfaction, and productivity.",
-        },
-        {
-          title: "Customer Service Representative",
-          company: "XYZ Solutions",
-          duration: "2018 - 2020",
-          description:
-            "Assisted customers with account inquiries, billing questions, and technical support via phone, email, and live chat. Utilized CRM software to document customer interactions and follow up on unresolved issues. Collaborated with other departments to resolve complex customer issues and escalate as needed.",
-        },
-      ],
-      skills: [
-        "Excellent Communication",
-        "Customer Service",
-        "Problem Solving",
-        "Time Management",
-        "Active Listening",
-        "Adaptability",
-        "CRM Software",
-        "Sales Techniques",
-      ],
+      aboutMe: response.data.description,
+      experience: [...value.experience],
+      skills: [...value.skills],
     };
 
-    const templatePath = path.join(
-      __dirname,
-      "..",
-      "..",
-      "views/resumes/base_resume.ejs"
+    const pdfBuffer = await generatePdf(data);
+
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    fs.writeFileSync(
+      "uploads/condidat/resume/" + uniqueSuffix + ".pdf",
+      pdfBuffer
     );
 
-    const template = fs.readFileSync(templatePath, "utf-8");
-    const compiledTemplate = ejs.compile(template);
-    const html = compiledTemplate({ ...data });
+    const entity = new Resume({
+      condidat: new mongoose.Types.ObjectId(req.user._id),
+      name: `${uniqueSuffix}.pdf`,
+      path: `${uniqueSuffix}.pdf`,
+      content: value.skills,
+    });
 
-    const browser = await puppeteer.launch({ headless: false });
-    const page = await browser.newPage();
-    await page.setContent(html);
-    const pdfBuffer = await page.pdf({ format: "A4" });
-    await browser.close();
+    const entitySaved = await entity.save();
 
-    fs.writeFileSync("call_center.pdf", pdfBuffer);
-
-    res.json({ success: true, path: "pdfPath" });
+    return res.status(201).json(entitySaved);
   } catch (error) {
     console.error("Error in generateResume:", error);
     return res
