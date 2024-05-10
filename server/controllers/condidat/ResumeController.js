@@ -97,6 +97,7 @@ exports.getResumes = async (req, res, next) => {
       condidat: resume.condidat,
       name: resume.name,
       content: resume.content,
+      date: resume.date ?? new Date(),
       path: fullUrlResume(req, resume.path),
     }));
 

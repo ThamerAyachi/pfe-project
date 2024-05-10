@@ -12,6 +12,11 @@ const ResumeSchema = mongoose.Schema({
   path: { type: String, require: true },
 
   content: { type: Object },
+
+  date: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 module.exports = Resume = mongoose.model("resume", ResumeSchema);
