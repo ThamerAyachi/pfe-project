@@ -26,6 +26,16 @@ export class ResumeService {
     }
   }
 
+  async generateResume(formData) {
+    try {
+      const config = { headers: { ...authHeader() } };
+      const { data } = await axios.post(`${API_URL}/${TYPE}/resume/generate`, formData, config);
+      return data;
+    } catch (e) {
+      throw new Error(e.response.data.error);
+    }
+  }
+
   async deleteResume(id) {
     try {
       const config = { headers: { ...authHeader() } };

@@ -18,8 +18,8 @@ export const SetPasswordPage = lazy(() => import('src/pages/reset_password/set_p
 export const EmailResetPasswordPage = lazy(() =>
   import('src/pages/reset_password/email_reset_password')
 );
-
 export const SettingsPage = lazy(() => import('src/pages/settings'));
+export const UpdateResumePage = lazy(() => import('src/pages/update-resume'));
 
 // ----------------------------------------------------------------------
 
@@ -52,6 +52,7 @@ export default function Router() {
         { path: 'user', element: <PrivateRoute element={<UserPage />} /> },
         { path: 'products', element: <PrivateRoute element={<ProductsPage />} /> },
         { path: 'blog', element: <PrivateRoute element={<BlogPage />} /> },
+        { path: 'resume', element: <PrivateRoute element={<UpdateResumePage />} /> },
       ],
     },
     {

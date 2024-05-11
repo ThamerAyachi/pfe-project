@@ -24,6 +24,7 @@ import Scrollbar from 'src/components/scrollbar';
 import ResumesTableHead from '../resumes-table-head';
 import ResumesTableRow from '../resumes-table-row';
 import { UploadResume } from '../upload-resume';
+import { Link } from 'react-router-dom';
 
 export default function SettingsView() {
   const [massageNot, setMessage] = useState('');
@@ -189,7 +190,9 @@ export default function SettingsView() {
         >
           <MenuItem onClick={handleOpenDialog}>Upload</MenuItem>
 
-          <MenuItem onClick={handleCloseMenu}>Generate</MenuItem>
+          <MenuItem onClick={handleCloseMenu} component={Link} to="/resume">
+            Generate
+          </MenuItem>
         </Popover>
 
         <Card>
