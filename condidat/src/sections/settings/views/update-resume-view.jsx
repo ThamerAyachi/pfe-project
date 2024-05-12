@@ -113,7 +113,7 @@ export default function UpdateResumeView() {
   };
 
   return (
-    <Container>
+    <Container style={{ background: 'white', padding: '10px', borderRadius: '10px' }}>
       <Stack mb={5} direction="row">
         <Button variant="contained" component={Link} to="/settings">
           <span>Back</span>
