@@ -41,6 +41,12 @@ router.post("/rest-password/:token", emailController.resetPassword);
 
 router.get("/offer", authMiddleware.authenticate, offerController.getOffers);
 
+router.get(
+  "/offer/:id",
+  authMiddleware.authenticate,
+  offerController.getOfferRequests
+);
+
 router.post("/offer", authMiddleware.authenticate, offerController.createOffer);
 
 router.post(

@@ -1,8 +1,17 @@
 const Offer = require("../../models/Offer");
+const Request = require("../../models/Request");
 const Joi = require("joi");
 const mongoose = require("mongoose");
 
 const { BadRequestError, NotFoundError } = require("../../errors/index");
+
+const calculateMatchPercentage = (skillsRequired, requestList) =>
+  ((matchedSkills) =>
+    ((matchedSkills / skillsRequired.length) * 100).toFixed(0))(
+    skillsRequired.filter((skill) =>
+      requestList.map((r) => r.toLowerCase()).includes(skill.toLowerCase())
+    ).length
+  );
 
 exports.getOffers = async (req, res, next) => {
   try {
@@ -113,5 +122,38 @@ exports.deleteOffer = async (req, res, next) => {
     return res
       .status(error.status ?? 400)
       .json({ error: error.message ?? "Error in delete Offer" });
+  }
+};
+
+exports.getOfferRequests = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const offer = await Offer.findOne({
+      _id: new mongoose.Types.ObjectId(id),
+    });
+
+    if (!offer) {
+      throw new NotFoundError("Offer not found");
+    }
+
+    const requests = await Request.find({
+      offer: new mongoose.Types.ObjectId(offer._id),
+    }).populate("resume");
+
+    const finalOffer = { ...offer._doc };
+    finalOffer.requests = [
+      ...requests.map((r) => ({
+        ...r._doc,
+        matched: calculateMatchPercentage(offer.skills, r.resume.content),
+      })),
+    ];
+
+    return res.json(finalOffer);
+  } catch (error) {
+    console.log("Error in getOfferRequests", error);
+    return res
+      .status(error.status ?? 400)
+      .json({ error: error.message ?? "Error in getOfferRequests" });
   }
 };

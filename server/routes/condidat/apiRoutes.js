@@ -4,6 +4,7 @@ const router = express.Router();
 const profileController = require("../../controllers/condidat/ProfileController");
 const emailController = require("../../controllers/condidat/EmailController");
 const resumeController = require("../../controllers/condidat/ResumeController");
+const requestController = require("../../controllers/condidat/RequestController");
 
 const authMiddleware = require("../../middleware/condidat/authMiddleware");
 const multerMiddleware = require("../../middleware/condidat/multerMiddleware");
@@ -57,6 +58,12 @@ router.post(
   "/resume/generate",
   authMiddleware.authenticate,
   resumeController.generateResume
+);
+
+router.post(
+  "/request",
+  authMiddleware.authenticate,
+  requestController.createRequest
 );
 
 module.exports = router;

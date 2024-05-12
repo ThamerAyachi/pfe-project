@@ -38,4 +38,10 @@ const OfferSchema = mongoose.Schema({
   },
 });
 
+OfferSchema.virtual("requests", {
+  ref: "Request",
+  localField: "_id",
+  foreignField: "offer",
+});
+
 module.exports = Offer = mongoose.model("offer", OfferSchema);
