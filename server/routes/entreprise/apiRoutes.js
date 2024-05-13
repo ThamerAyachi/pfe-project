@@ -3,6 +3,7 @@ const router = express.Router();
 
 const profileController = require("../../controllers/entreprise/ProfileController");
 const emailController = require("../../controllers/entreprise/EmailController");
+const offerController = require("../../controllers/entreprise/OfferController");
 
 const authMiddleware = require("../../middleware/entreprise/authMiddleware");
 const multerMiddleware = require("../../middleware/entreprise/multerMiddleware");
@@ -37,5 +38,27 @@ router.post("/rest-password", emailController.forgetPassword);
 router.get("/rest-password/:token", emailController.checkTokenRestPassword);
 
 router.post("/rest-password/:token", emailController.resetPassword);
+
+router.get("/offer", authMiddleware.authenticate, offerController.getOffers);
+
+router.get(
+  "/offer/:id",
+  authMiddleware.authenticate,
+  offerController.getOfferRequests
+);
+
+router.post("/offer", authMiddleware.authenticate, offerController.createOffer);
+
+router.post(
+  "/offer/:id",
+  authMiddleware.authenticate,
+  offerController.updateOffer
+);
+
+router.delete(
+  "/offer/:id",
+  authMiddleware.authenticate,
+  offerController.deleteOffer
+);
 
 module.exports = router;
