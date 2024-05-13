@@ -13,6 +13,9 @@ const calculateMatchPercentage = (skillsRequired, requestList) =>
     ).length
   );
 
+const fullUrlResume = (req, path) =>
+  `${req.protocol}:\/\/${req.get("host")}/file/condidat-resume/${path}`;
+
 exports.getOffers = async (req, res, next) => {
   try {
     const offers = await Offer.find({
@@ -145,6 +148,10 @@ exports.getOfferRequests = async (req, res, next) => {
     finalOffer.requests = [
       ...requests.map((r) => ({
         ...r._doc,
+        resume: {
+          ...r._doc.resume._doc,
+          path: fullUrlResume(req, r.resume.path),
+        },
         matched: calculateMatchPercentage(offer.skills, r.resume.content),
       })),
     ];
