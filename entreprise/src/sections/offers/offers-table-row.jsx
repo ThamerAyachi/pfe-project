@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Iconify from 'src/components/iconify';
 import { OfferService } from 'src/services/offer-service';
 
@@ -118,6 +119,9 @@ export default function OffersTableRow({
         }}
       >
         <MenuItem>Details</MenuItem>
+        <MenuItem component={Link} to={`/offer/${id}/update`}>
+          Update
+        </MenuItem>
         <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
           Delete
         </MenuItem>

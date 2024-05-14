@@ -16,6 +16,16 @@ export class OfferService {
     }
   }
 
+  async getOfferById(id) {
+    try {
+      const config = { headers: { ...authHeader() } };
+      const { data } = await axios.get(`${API_URL}/${TYPE}/offer/${id}`, config);
+      return data;
+    } catch (e) {
+      throw new Error(e.response.data.error);
+    }
+  }
+
   async deleteOffer(id) {
     try {
       const config = { headers: { ...authHeader() } };
@@ -30,6 +40,16 @@ export class OfferService {
     try {
       const config = { headers: { ...authHeader() } };
       const { data } = await axios.post(`${API_URL}/${TYPE}/offer`, formData, config);
+      return data;
+    } catch (e) {
+      throw new Error(e.response.data.error);
+    }
+  }
+
+  async updateOffer(formData, id) {
+    try {
+      const config = { headers: { ...authHeader() } };
+      const { data } = await axios.post(`${API_URL}/${TYPE}/offer/${id}`, formData, config);
       return data;
     } catch (e) {
       throw new Error(e.response.data.error);

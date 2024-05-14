@@ -20,6 +20,7 @@ export const EmailRestPasswordPage = lazy(() =>
 );
 export const OffersPage = lazy(() => import('src/pages/offers'));
 export const OfferPage = lazy(() => import('src/pages/offer'));
+export const OfferUpdatePage = lazy(() => import('src/pages/offer-update'));
 
 // ----------------------------------------------------------------------
 
@@ -53,6 +54,7 @@ export default function Router() {
         { path: 'blog', element: <PrivateRoute element={<BlogPage />} /> },
         { path: 'offers', element: <PrivateRoute element={<OffersPage />} /> },
         { path: 'offer', element: <PrivateRoute element={<OfferPage />} /> },
+        { path: 'offer/:id/update', element: <PrivateRoute element={<OfferUpdatePage />} /> },
       ],
     },
     {
