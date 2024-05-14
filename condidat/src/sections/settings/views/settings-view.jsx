@@ -222,6 +222,7 @@ export default function SettingsView() {
 
                 <TableBody>
                   {dataFiltered
+                    .reverse()
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => (
                       <ResumesTableRow

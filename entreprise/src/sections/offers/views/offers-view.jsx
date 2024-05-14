@@ -173,6 +173,7 @@ export default function OffersView() {
 
                 <TableBody>
                   {dataFiltered
+                    .reverse()
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => (
                       <OffersTableRow
