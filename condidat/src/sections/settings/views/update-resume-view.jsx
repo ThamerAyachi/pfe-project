@@ -31,7 +31,6 @@ export default function UpdateResumeView() {
 
   const handleChange = (e, index, type, name = null) => {
     const updatedData = { ...formData };
-    console.log(index);
     if (type === 'experience') {
       updatedData.experience[index][name] = e.target.value;
     } else if (type === 'skills') {
@@ -69,8 +68,7 @@ export default function UpdateResumeView() {
     _formData.skills = skills;
     setSending(true);
     try {
-      const response = await resumeService.generateResume(formData);
-      console.log(response);
+      const response = await resumeService.generateResume(_formData);
       setSending(false);
       handleClickMessage('Generating Succuss');
       navigate('/settings');

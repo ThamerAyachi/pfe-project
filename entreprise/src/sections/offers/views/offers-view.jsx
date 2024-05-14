@@ -19,6 +19,7 @@ import OffersTableHead from '../offers-table-head';
 import { applyFilter, getComparator } from 'src/sections/user/utils';
 import Iconify from 'src/components/iconify';
 import OffersTableToolbar from '../offers-table-toolbar';
+import { Link } from 'react-router-dom';
 
 export default function OffersView() {
   const [massageNot, setMessage] = useState('');
@@ -132,7 +133,13 @@ export default function OffersView() {
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4">Offers</Typography>
 
-          <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+          <Button
+            variant="contained"
+            color="inherit"
+            startIcon={<Iconify icon="eva:plus-fill" />}
+            component={Link}
+            to="/offer"
+          >
             New Offer
           </Button>
         </Stack>

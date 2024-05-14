@@ -25,4 +25,14 @@ export class OfferService {
       throw new Error(e.response.data.error);
     }
   }
+
+  async createOffer(formData) {
+    try {
+      const config = { headers: { ...authHeader() } };
+      const { data } = await axios.post(`${API_URL}/${TYPE}/offer`, formData, config);
+      return data;
+    } catch (e) {
+      throw new Error(e.response.data.error);
+    }
+  }
 }
