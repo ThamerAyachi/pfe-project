@@ -118,7 +118,9 @@ export default function OffersTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem>Details</MenuItem>
+        <MenuItem component={Link} to={`/offer/${id}`}>
+          Details
+        </MenuItem>
         <MenuItem component={Link} to={`/offer/${id}/update`}>
           Update
         </MenuItem>
