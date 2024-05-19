@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const OfferSchema = mongoose.Schema({
   entreprise: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Entreprise",
+    ref: "entreprise",
     required: true,
   },
 

@@ -5,6 +5,8 @@ exports.getOffers = async (req, res, next) => {
   const limit = parseInt(req.query.limit) || 10;
   try {
     const results = await Offer.find()
+      .populate("entreprise")
+      .sort({ date: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
@@ -14,7 +16,17 @@ exports.getOffers = async (req, res, next) => {
     const totalPages = Math.ceil(totalResults / limit);
 
     res.json({
-      results,
+      results: results.map(({ _doc }) => ({
+        ..._doc,
+        entreprise: {
+          ..._doc.entreprise._doc,
+          photo: _doc.entreprise._doc.photo
+            ? `${req.protocol}:\/\/${req.get("host")}/file/entreprise-profile/${
+                _doc.entreprise._doc.photo
+              }`
+            : null,
+        },
+      })),
       totalPages,
       currentPage: page,
     });
