@@ -29,9 +29,9 @@ const MENU_OPTIONS = [
     path: '/profile',
   },
   {
-    label: 'Settings',
+    label: 'Offers',
     icon: 'eva:settings-2-fill',
-    path: '/',
+    path: '/offers',
   },
 ];
 

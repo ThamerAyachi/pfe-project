@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const OfferSchema = mongoose.Schema({
   entreprise: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Entreprise",
+    ref: "entreprise",
     required: true,
   },
 
@@ -35,6 +35,11 @@ const OfferSchema = mongoose.Schema({
   skills: {
     type: [String],
     default: [],
+  },
+
+  date: {
+    type: Date,
+    default: Date.now,
   },
 });
 

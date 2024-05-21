@@ -1,5 +1,6 @@
 const Request = require("../../models/Request");
 const Offer = require("../../models/Offer");
+const Resume = require("../../models/Resume");
 const Joi = require("joi");
 const mongoose = require("mongoose");
 
@@ -16,6 +17,12 @@ exports.createRequest = async (req, res, next) => {
     if (error) {
       throw new BadRequestError(error.details[0].message);
     }
+
+    const resume = await Resume.findOne({
+      _id: new mongoose.Types.ObjectId(value.resume),
+    });
+
+    if (!resume) throw new NotFoundError("Resume not found");
 
     const newRequest = new Request({
       condidat: new mongoose.Types.ObjectId(req.user._id),

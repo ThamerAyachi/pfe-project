@@ -1,12 +1,8 @@
 /* eslint-disable */
 import {
-  Box,
   Button,
   Card,
   Container,
-  MenuItem,
-  Modal,
-  Popover,
   Snackbar,
   Stack,
   Table,
@@ -16,20 +12,19 @@ import {
   Typography,
 } from '@mui/material';
 import React, { useState, useEffect } from 'react';
-import Iconify from 'src/components/iconify';
-import { applyFilter, getComparator } from 'src/sections/user/utils';
-import { ResumeService } from 'src/services/resume-service';
-import ResumeTableToolbar from '../resume-table-toolbar';
+import { OfferService } from 'src/services/offer-service';
+import OffersTableRow from '../offers-table-row';
 import Scrollbar from 'src/components/scrollbar';
-import ResumesTableHead from '../resumes-table-head';
-import ResumesTableRow from '../resumes-table-row';
-import { UploadResume } from '../upload-resume';
+import OffersTableHead from '../offers-table-head';
+import { applyFilter, getComparator } from 'src/sections/user/utils';
+import Iconify from 'src/components/iconify';
+import OffersTableToolbar from '../offers-table-toolbar';
 import { Link } from 'react-router-dom';
 
-export default function SettingsView() {
+export default function OffersView() {
   const [massageNot, setMessage] = useState('');
   const [open, setOpen] = useState(false);
-  const [resumes, setResumes] = useState([]);
+  const [offers, setOffers] = useState([]);
 
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
@@ -37,9 +32,6 @@ export default function SettingsView() {
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const [openMenu, setOpenMenu] = useState(null);
-  const [openDialog, setOpenDialog] = useState(false);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -51,7 +43,7 @@ export default function SettingsView() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = resumes.map((n) => n.name);
+      const newSelecteds = offers.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -91,14 +83,14 @@ export default function SettingsView() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: resumes,
+    inputData: offers,
     comparator: getComparator(order, orderBy),
     filterName,
   });
 
   const notFound = !dataFiltered.length && !!filterName;
 
-  const resumeService = new ResumeService();
+  const offersService = new OfferService();
 
   const handleClickMessage = (message = 'Notification') => {
     setMessage(message);
@@ -112,91 +104,48 @@ export default function SettingsView() {
     setOpen(false);
   };
 
-  const getResumes = async () => {
+  const getOffers = async () => {
     try {
-      const response = await resumeService.getResumes();
-      setResumes(response);
+      const response = await offersService.getOffers();
+      setOffers(response);
     } catch (err) {
       console.log(err);
       handleClickMessage(err.toString());
     }
   };
 
-  const handleOpenMenu = (event) => {
-    setOpenMenu(event.currentTarget);
-  };
-
-  const handleCloseMenu = () => {
-    setOpenMenu(null);
-  };
-
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
-
   useEffect(() => {
-    getResumes();
+    getOffers();
   }, []);
 
-  const handleFileUploaded = (status) => {
-    if (status == true) {
-      handleCloseDialog();
-      getResumes();
-      handleClickMessage('Uploading succuss');
-    }
-    if (status == false) {
-      handleClickMessage('Uploading failed');
-    }
-  };
-
-  const handleFileDeleted = (status) => {
-    if (status == true) {
-      getResumes();
+  const handleDelete = (response) => {
+    if (response) {
       handleClickMessage('Deleting succuss');
+      getOffers();
+      return;
     }
-    if (status == false) {
-      handleClickMessage('Deleting failed');
-    }
+    handleClickMessage('Deleting failed');
   };
 
   return (
     <>
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-          <Typography variant="h4">Resumes</Typography>
+          <Typography variant="h4">Offers</Typography>
 
           <Button
-            onClick={handleOpenMenu}
             variant="contained"
             color="inherit"
             startIcon={<Iconify icon="eva:plus-fill" />}
+            component={Link}
+            to="/offer"
           >
-            New Resume
+            New Offer
           </Button>
         </Stack>
-        <Popover
-          open={!!openMenu}
-          anchorEl={openMenu}
-          onClose={handleCloseMenu}
-          anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-          PaperProps={{
-            sx: { width: 140 },
-          }}
-        >
-          <MenuItem onClick={handleOpenDialog}>Upload</MenuItem>
-
-          <MenuItem onClick={handleCloseMenu} component={Link} to="/resume">
-            Generate
-          </MenuItem>
-        </Popover>
 
         <Card>
-          <ResumeTableToolbar
+          <OffersTableToolbar
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
@@ -205,17 +154,19 @@ export default function SettingsView() {
           <Scrollbar>
             <TableContainer xs={{ overflow: 'unset' }}>
               <Table xs={{ minWidth: 800 }}>
-                <ResumesTableHead
+                <OffersTableHead
                   order={order}
                   orderBy={orderBy}
-                  rowCount={resumes.length}
+                  rowCount={offers.length}
                   numSelected={selected.length}
                   onRequestSort={handleSort}
                   onSelectAllClick={handleSelectAllClick}
                   headLabel={[
-                    { id: 'name', label: 'Name' },
+                    { id: 'job_title', label: 'Title' },
+                    { id: 'type', label: 'Type' },
+                    { id: 'environment', label: 'Environment' },
+                    { id: 'time_type', label: 'Time Type' },
                     { id: 'date', label: 'Date' },
-                    { id: 'path', label: 'Download' },
                     { id: '' },
                   ]}
                 />
@@ -225,15 +176,17 @@ export default function SettingsView() {
                     .reverse()
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => (
-                      <ResumesTableRow
+                      <OffersTableRow
                         key={row._id}
                         id={row._id}
-                        name={row.name}
-                        path={row.path}
+                        job_title={row.job_title}
+                        type={row.type}
+                        environment={row.environment}
+                        time_type={row.time_type}
                         date={row.date}
                         selected={selected.indexOf(row.name) !== -1}
                         handleClick={(event) => handleClick(event, row.name)}
-                        handleFileDeleted={handleFileDeleted}
+                        _handleDelete={handleDelete}
                       />
                     ))}
                 </TableBody>
@@ -244,7 +197,7 @@ export default function SettingsView() {
           <TablePagination
             page={page}
             component="div"
-            count={resumes.length}
+            count={offers.length}
             rowsPerPage={rowsPerPage}
             onPageChange={handleChangePage}
             rowsPerPageOptions={[5, 10, 25]}
@@ -253,31 +206,6 @@ export default function SettingsView() {
         </Card>
       </Container>
       <Snackbar open={open} autoHideDuration={2000} onClose={handleClose} message={massageNot} />
-      <Modal
-        open={openDialog}
-        onClose={handleCloseDialog}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Upload your resume
-          </Typography>
-          <UploadResume onFileUploaded={handleFileUploaded} />
-        </Box>
-      </Modal>
     </>
   );
 }
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};

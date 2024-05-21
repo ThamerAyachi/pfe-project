@@ -31,7 +31,6 @@ export default function UpdateResumeView() {
 
   const handleChange = (e, index, type, name = null) => {
     const updatedData = { ...formData };
-    console.log(index);
     if (type === 'experience') {
       updatedData.experience[index][name] = e.target.value;
     } else if (type === 'skills') {
@@ -69,8 +68,7 @@ export default function UpdateResumeView() {
     _formData.skills = skills;
     setSending(true);
     try {
-      const response = await resumeService.generateResume(formData);
-      console.log(response);
+      const response = await resumeService.generateResume(_formData);
       setSending(false);
       handleClickMessage('Generating Succuss');
       navigate('/settings');
@@ -113,7 +111,15 @@ export default function UpdateResumeView() {
   };
 
   return (
-    <Container style={{ background: 'white', padding: '10px', borderRadius: '10px' }}>
+    <Container
+      style={{
+        background: 'white',
+        padding: '20px',
+        borderRadius: '10px',
+        border: '1px solid #ccc',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+      }}
+    >
       <Stack mb={5} direction="row">
         <Button variant="contained" component={Link} to="/settings">
           <span>Back</span>
@@ -229,6 +235,8 @@ export default function UpdateResumeView() {
                   />
                 </Grid>
               </Grid>
+
+              <hr />
             </div>
           ))}
           <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
