@@ -3,15 +3,21 @@ const Offer = require("../../models/Offer");
 exports.getOffers = async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
+  const searchQuery = req.query.q || "";
+
   try {
-    const results = await Offer.find()
+    const results = await Offer.find({
+      job_title: new RegExp(searchQuery, "i"),
+    })
       .populate("entreprise")
       .sort({ date: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
 
-    const totalResults = await Offer.countDocuments();
+    const totalResults = await Offer.countDocuments({
+      job_title: new RegExp(searchQuery, "i"),
+    });
 
     const totalPages = Math.ceil(totalResults / limit);
 
