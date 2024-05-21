@@ -68,7 +68,7 @@ export default function AppView() {
     <>
       <Container>
         <Stack>
-          <Typography variant="h4">Welcome back {user?.firstName}</Typography>
+          <Typography variant="h4">Welcome back {user?.name}</Typography>
         </Stack>
 
         <Stack style={{ width: '100%' }}>
